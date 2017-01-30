@@ -32,15 +32,18 @@ def menu_peliculas(item):
     logger.info("pelisalacarta.channels.borrachotorrent menu_peliculas")
     
     itemlist = []
-    itemlist.append( Item(channel=item.channel, action="peliculasHD" , title="Películas HD" , url="https://www.borrachodetorrent.com/wp-json/wp/v2/posts?categories_exclude=53571" ,folder=True))
-    itemlist.append( Item(channel=item.channel, action="menu" , title="Estrenos de Película" , url="http://www.divxatope.com" ,folder=True))
+	
+    itemlist.append( Item(channel=item.channel, action="peliculasHD" , title="Películas HD" , url="https://www.borrachodetorrent.com/wp-json/wp/v2/posts?categories_exclude=53571&per_page=35&filter[orderby]=fecha_unix_estreno&order=desc" ,folder=True))
+	
+    itemlist.append( Item(channel=item.channel, action="menu" , title="Estrenos de Película" , url="https://www.borrachodetorrent.com/wp-json/wp/v2/posts?categories_exclude=53571&per_page=35&filter[orderby]=fecha_unix_estreno&order=desc" ,folder=True))
+	
     return itemlist
 
 
 
 
 def peliculasHD(item):
-    logger.info("pelisalacarta.channels.animeflv peliculasHD")
+    logger.info("pelisalacarta.channels.borrachotorrent peliculasHD")
 
     itemlist = list()
 
