@@ -32,11 +32,10 @@ def menu_peliculas(item):
     logger.info("pelisalacarta.channels.borrachotorrent menu_peliculas")
     
     itemlist = []
-	
-    itemlist.append( Item(channel=item.channel, action="peliculasHD" , title="Películas HD" , url="https://www.borrachodetorrent.com/wp-json/wp/v2/posts?categories_exclude=53571&per_page=35&filter[orderby]=fecha_unix_estreno&order=desc" ,folder=True))
-	
-    itemlist.append( Item(channel=item.channel, action="menu" , title="Estrenos de Película" , url="https://www.borrachodetorrent.com/wp-json/wp/v2/posts?categories_exclude=53571&per_page=35&filter[orderby]=fecha_unix_estreno&order=desc" ,folder=True))
-	
+
+    itemlist.append( Item(channel=item.channel, action="peliculasHD" , title="Películas HD" , url="https://www.borrachodetorrent.com/wp-json/wp/v2/posts?categories_exclude=53571&page=1&per_page=28" ,folder=True))
+    itemlist.append( Item(channel=item.channel, action="menu" , title="Estrenos de Película" , url="https://www.borrachodetorrent.com/wp-json/wp/v2/posts?categories_exclude=53571&page=1&per_page=28" ,folder=True))
+ 
     return itemlist
 
 
@@ -49,10 +48,9 @@ def peliculasHD(item):
 
 
     data = scrapertools.cache_page(item.url)
-    # JSONData = json.load_json(data)
-    # JSONData = jsontools.loads(data)
     JSONData = jsontools.load_json(data)
     
+    contador = 0
     for Video in JSONData:
       thumbnail1 = Video['rest_api_enabler']['poster_url780']
       url1 = Video['rest_api_enabler']['torrent_Url']
@@ -61,8 +59,21 @@ def peliculasHD(item):
       fanart1 = Video['rest_api_enabler']['fondo_player']
       torrent_Calidad1 = Video['rest_api_enabler']['torrent_Calidad']
 
-      if url1!="":
+      if url1!="" and title1!="" and plot1!="" and fanart1!="" and torrent_Calidad1!="" and thumbnail1!="":
         itemlist.append( Item(channel=item.channel, action="play", server="torrent", title=title1+" ["+torrent_Calidad1+"]", fulltitle=title1, url=url1 , thumbnail=thumbnail1, plot=plot1, fanart=fanart1, folder=False) )
+        contador = int(contador)+1
+      else:
+        continue
+      
+      if contador >= 28:
+        url_json = item.url
+        patron = re.compile('&page=([1-25])')
+        matcher = patron.search(url_json)
+        masuno = int(matcher.group(1))+1
+        reemplazar = '&page='+str(masuno)
+        url2 = url_json.replace(matcher.group(0), reemplazar)
+        logger.info("[borrachodetorrent.py]  " + url2)
+        itemlist.append( Item(channel=item.channel, action="peliculasHD" , title=url2 , url=url2, folder=True))
 
     return itemlist
     
