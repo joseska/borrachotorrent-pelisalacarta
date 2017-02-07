@@ -136,10 +136,31 @@ def menu_series_2(item):
     itemlist3 = []
 
     itemlist3.append( Item(channel=item.channel, action="play", server="torrent", title="Ver este Capítulo ("+title3+")", fulltitle=fulltitle3, url=magnet3 , thumbnail=thumbnail3, plot=plot3, fanart=fanart3, tipo="Series", folder=False) )
-    itemlist3.append( Item(channel=item.channel, action="menu_series_3" , title="Listar todos los Capítulos" , url=url3, tipo="Series", folder=True))
+    itemlist3.append( Item(channel=item.channel, action="menu_series_3" , title=url3 , url=url3, tipo="Series", folder=True))
     
 
     return itemlist3
+
+
+
+def menu_series_3(item):
+    logger.info("pelisalacarta.channels.borrachotorrent menu_series3")
+
+    itemlist4 = []
+    url4 = item.url
+
+    data_Series_3 = scrapertools.cache_page(url4)
+    JSONData_Series_3 = jsontools.load_json(data_Series_3)
+
+    contador = 0
+    contador_temporadas = 1
+    for Series3 in JSONData_Series_3[temporadas]:
+
+        itemlist4.append( Item(channel=item.channel, action="menu_series_3" , title="Temporada "+contador_temporadas , url=url3, tipo="Series", folder=True))
+        contador_temporadas = contador_temporadas+1
+
+    return itemlist4
+
 
 
 
