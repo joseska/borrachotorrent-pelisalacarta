@@ -24,7 +24,7 @@ def mainlist(item):
 
     itemlist = []
     itemlist.append( Item(channel=item.channel, action="menu_peliculas" , title="Películas" ,folder=True))
-    itemlist.append( Item(channel=item.channel, action="menu_series" , title="Series" ,folder=True))
+    itemlist.append( Item(channel=item.channel, action="menu_series", title="Series HD", url="https://www.borrachodetorrent.com/wp-json/wp/v2/episodes?per_page=28&page=1", folder=True))
     itemlist.append( Item(channel=item.channel, action="search" , title="Buscar..."))
     return itemlist
 
@@ -81,11 +81,67 @@ def peliculasHD(item):
 
 def menu_series(item):
     logger.info("pelisalacarta.channels.borrachotorrent menu_series")
+
+    itemlist = list()
     
+    data_Series = scrapertools.cache_page(item.url)
+    JSONData_Series = jsontools.load_json(data_Series)
+
+    contador = 0
+    for Series in JSONData_Series:
+      id_serie1 = Series['rest_api_enabler']['id_serie']
+      title1 = Series['serie'][0]  
+      title2 = Series['title']['rendered'] 
+      plot1 = Series['content']['rendered']
+      temporada1 = Series['rest_api_enabler']['temporada']
+      episodio1 = Series['rest_api_enabler']['episodio']
+      thumbnail1 = Series['rest_api_enabler']['poster_serie']
+      fanart1 = Series['rest_api_enabler']['fondo_player']
+      torrent_Calidad1 = Series['rest_api_enabler']['torrent_Calidad']
+      torrent_url1 = Series['rest_api_enabler']['torrent_Url']
+      
+
+      if id_serie1!="":
+        url_serie = "https://www.borrachodetorrent.com/wp-json/acf/v2/tvshows/"+id_serie1+"/temporadas/"
+        itemlist.append( Item(channel=item.channel, action="menu_series_2", title=title2+" ["+torrent_Calidad1+"]", fulltitle=title2, url=url_serie, thumbnail=thumbnail1, plot=plot1, fanart=fanart1, magnet_url=torrent_url1, tipo="Series", folder=True))
+        contador = int(contador)+1
+      else:
+        continue
+      
+      if contador >= 28:
+        url_json = item.url
+        patron = re.compile('&page=([1-9])')
+        matcher = patron.search(url_json)
+        masuno = int(matcher.group(1))+1
+        reemplazar = '&page='+str(masuno)
+        url2 = url_json.replace(matcher.group(0), reemplazar)
+        logger.info("[borrachodetorrent.py]  " + url2)
+        itemlist.append( Item(channel=item.channel, action="menu_series" , title=">> Página siguiente" , url=url2, tipo="Series", folder=True))
+
+    return itemlist
+
+
+
+def menu_series_2(item):
+    logger.info("pelisalacarta.channels.borrachotorrent menu_series2")
+
+    title3 = item.title
+    fulltitle3 = item.fulltitle
+    url3 = item.url
+    magnet3 = item.magnet_url
+    plot3 = item.plot
+    thumbnail3 = item.thumbnail
+    fanart3 = item.fanart
+
     itemlist3 = []
-    itemlist3.append( Item(channel=item.channel, action="menu" , title="Series1" , url="http://www.divxatope.com/",extra="Peliculas",folder=True))
-    itemlist3.append( Item(channel=item.channel, action="menu" , title="Series 2" , url="http://www.divxatope.com",extra="Series",folder=True))
+
+    itemlist3.append( Item(channel=item.channel, action="play", server="torrent", title="Ver este Capítulo ("+title3+")", fulltitle=fulltitle3, url=magnet3 , thumbnail=thumbnail3, plot=plot3, fanart=fanart3, tipo="Series", folder=False) )
+    itemlist3.append( Item(channel=item.channel, action="menu_series_3" , title="Listar todos los Capítulos" , url=url3, tipo="Series", folder=True))
+    
+
     return itemlist3
+
+
 
 
 def search(item,texto):
