@@ -99,11 +99,12 @@ def menu_series(item):
       fanart1 = Series['rest_api_enabler']['fondo_player']
       torrent_Calidad1 = Series['rest_api_enabler']['torrent_Calidad']
       torrent_url1 = Series['rest_api_enabler']['torrent_Url']
+      id_serie_wp1 = Series['rest_api_enabler']['ID_serie_WP']
       
 
       if id_serie1!="":
-        url_serie = "https://www.borrachodetorrent.com/wp-json/acf/v2/tvshows/"+id_serie1+"/temporadas/"
-        itemlist.append( Item(channel=item.channel, action="menu_series_2", title=title2+" ["+torrent_Calidad1+"]", fulltitle=title2, url=url_serie, thumbnail=thumbnail1, plot=plot1, fanart=fanart1, magnet_url=torrent_url1, tipo="Series", folder=True))
+        url_serie = "https://www.borrachodetorrent.com/wp-json/acf/v2/tvshows/"+id_serie_wp1+"/temporadas/"
+        itemlist.append( Item(channel=item.channel, action="menu_series_2", title=title2+" ["+torrent_Calidad1+"]", fulltitle=title2, url=url_serie, thumbnail=thumbnail1, plot=plot1, fanart=fanart1, magnet_url=torrent_url1, tipo="Series", N_serie=title1, folder=True))
         contador = int(contador)+1
       else:
         continue
@@ -126,6 +127,7 @@ def menu_series_2(item):
     logger.info("pelisalacarta.channels.borrachotorrent menu_series2")
 
     title3 = item.title
+    nombre_serie = item.N_serie
     fulltitle3 = item.fulltitle
     url3 = item.url
     magnet3 = item.magnet_url
@@ -136,7 +138,7 @@ def menu_series_2(item):
     itemlist3 = []
 
     itemlist3.append( Item(channel=item.channel, action="play", server="torrent", title="Ver este Capítulo ("+title3+")", fulltitle=fulltitle3, url=magnet3 , thumbnail=thumbnail3, plot=plot3, fanart=fanart3, tipo="Series", folder=False) )
-    itemlist3.append( Item(channel=item.channel, action="menu_series_3" , title=url3 , url=url3, tipo="Series", folder=True))
+    itemlist3.append( Item(channel=item.channel, action="menu_series_3" , title="Listar todos los capitulos", url=url3, tipo="Series", thumbnail=thumbnail3, fanart=fanart3, fulltitle=fulltitle3, plot=plot3, serie=nombre_serie, folder=True))
     
 
     return itemlist3
@@ -146,18 +148,29 @@ def menu_series_2(item):
 def menu_series_3(item):
     logger.info("pelisalacarta.channels.borrachotorrent menu_series3")
 
-    itemlist4 = []
+    itemlist4 = list()
     url4 = item.url
+    serie_nombre = item.serie
+    serie_fanart = item.fanart
+    serie_thumbnail = item.thumbnail
+    serie_plot = item.plot
 
-    data_Series_3 = scrapertools.cache_page(url4)
-    JSONData_Series_3 = jsontools.load_json(data_Series_3)
+    data_Series_4 = scrapertools.cache_page(url4)
+    JSONData_Series_4 = jsontools.load_json(data_Series_4)
+    JSONData_Series_4_1 = JSONData_Series_4['temporadas']
 
-    contador = 0
     contador_temporadas = 1
-    for Series3 in JSONData_Series_3[temporadas]:
+    for Series3 in JSONData_Series_4_1:
+        JSONData_episodios = Series3['episodios']
+        contador_episodios = 1
+        for episodios3 in JSONData_episodios:
+            episodio_nombre = episodios3['titlee']
+            episodio_torrent = episodios3['url_torrent_episodio']
 
-        itemlist4.append( Item(channel=item.channel, action="menu_series_3" , title="Temporada "+contador_temporadas , url=url3, tipo="Series", folder=True))
-        contador_temporadas = contador_temporadas+1
+            itemlist4.append( Item(channel=item.channel, action="play", server="torrent", title=serie_nombre+" [HDTV] ("+str(contador_temporadas)+"x"+str(contador_episodios)+") - "+episodio_nombre, url=episodio_torrent, fanart=serie_fanart, thumbnail=serie_thumbnail, plot=serie_plot, tipo="Series", folder=False))
+            contador_episodios = int(contador_episodios) + 1
+
+        contador_temporadas = int(contador_temporadas) + 1
 
     return itemlist4
 
