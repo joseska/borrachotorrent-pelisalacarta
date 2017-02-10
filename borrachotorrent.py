@@ -161,16 +161,21 @@ def menu_series_3(item):
 
     contador_temporadas = 1
     for Series3 in JSONData_Series_4_1:
-        JSONData_episodios = Series3['episodios']
-        contador_episodios = 1
-        for episodios3 in JSONData_episodios:
-            episodio_nombre = episodios3['titlee']
-            episodio_torrent = episodios3['url_torrent_episodio']
+        # Si hay temporadas vacias, soluciona el problema
+        if Series3.get('episodios'):
+            JSONData_episodios = Series3['episodios']
+            contador_episodios = 1
+            for episodios3 in JSONData_episodios:
+                episodio_nombre = episodios3['titlee']
+                episodio_torrent = episodios3['url_torrent_episodio']
+                if episodio_torrent == "":
+                    continue
 
-            itemlist4.append( Item(channel=item.channel, action="play", server="torrent", title=serie_nombre+" [HDTV] ("+str(contador_temporadas)+"x"+str(contador_episodios)+") - "+episodio_nombre, url=episodio_torrent, fanart=serie_fanart, thumbnail=serie_thumbnail, plot=serie_plot, tipo="Series", folder=False))
-            contador_episodios = int(contador_episodios) + 1
+                itemlist4.append( Item(channel=item.channel, action="play", server="torrent", title=serie_nombre+" [HDTV] ("+str(contador_temporadas)+"x"+str(contador_episodios)+") - "+episodio_nombre, url=episodio_torrent, fanart=serie_fanart, thumbnail=serie_thumbnail, plot=serie_plot, tipo="Series", folder=False))
+                contador_episodios = int(contador_episodios) + 1
 
         contador_temporadas = int(contador_temporadas) + 1
+
 
     return itemlist4
 
