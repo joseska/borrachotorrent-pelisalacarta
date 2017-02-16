@@ -33,7 +33,7 @@ def menu_peliculas(item):
     
     itemlist = []
 
-    itemlist.append( Item(channel=item.channel, action="peliculasHD" , title="Películas HD" , url="https://www.borrachodetorrent.com/wp-json/wp/v2/posts?categories_exclude=53571&page=1&per_page=28" ,folder=True))
+    itemlist.append( Item(channel=item.channel, action="peliculasHD" , title="Películas HD" , url="https://www.borrachodetorrent.com/wp-json/wp/v2/posts?categories_exclude=53571&page=1&per_page=28&filter[calidad]=4kultrahd,bdrip,bluray-1080p,bluray-microhd,blurayrip,blurayrip-ac3-5-1,fullbluray,hd-1080p,hd-720p,hdrip,microHD" ,folder=True))
     itemlist.append( Item(channel=item.channel, action="menu" , title="Estrenos de Película" , url="https://www.borrachodetorrent.com/wp-json/wp/v2/posts?categories_exclude=53571&page=1&per_page=28" ,folder=True))
  
     return itemlist
